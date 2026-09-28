@@ -1,0 +1,55 @@
+---
+// Detailpagina per use case: situatie en aanpak (markdown), stappen en resultaat uit de frontmatter.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+  const cases = await getCollection('usecases', ({ data }) => import.meta.env.PROD ? !data.draft : true);
+  return cases.map((c) => ({ params: { slug: c.slug }, props: { c } }));
+}
+
+type Props = { c: CollectionEntry<'usecases'> };
+const { c } = Astro.props;
+const { Content } = await c.render();
+---
+
+<BaseLayout title={c.data.title} description={c.data.description} ogImage={c.data.image}>
+  <section class="bg-navy text-white">
+    <div class="mx-auto max-w-6xl px-6 py-14 sm:py-16">
+      <div class="max-w-3xl">
+        <div class="text-xs uppercase tracking-wider text-bf-red-coral mb-3 font-semibold">
+          <a href="/use-cases" class="no-underline text-bf-red-coral hover:text-white">Use cases</a> · {c.data.klant}
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-4 leading-tight">{c.data.title}</h1>
+        <p class="text-lg text-pale-blue leading-relaxed m-0">{c.data.description}</p>
+      </div>
+    </div>
+    <div class="h-1 bg-bf-red"></div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-6 py-14 grid md:grid-cols-[2fr_1fr] gap-10 items-start">
+    <article class="prose max-w-none prose-headings:font-bold prose-p:text-navy/85">
+      {c.data.image && <img src={c.data.image} alt="" class="w-full h-auto rounded-md border border-grey-light/40 mb-8 not-prose" />}
+      <Content />
+    </article>
+    <aside class="border-2 border-grey-light/50 rounded-lg p-6 md:sticky md:top-24">
+      <div class="text-xs uppercase tracking-wider text-bf-red mb-2 font-bold">De stappen</div>
+      <ol class="list-decimal list-inside text-[15px] text-navy/85 space-y-2 m-0 p-0">
+        {c.data.stappen.map((s) => <li>{s}</li>)}
+      </ol>
+      {c.data.resultaat && (
+        <div class="mt-6">
+          <div class="text-xs uppercase tracking-wider text-bf-red mb-2 font-bold">Resultaat</div>
+          <p class="text-[15px] text-navy/85 m-0">{c.data.resultaat}</p>
+        </div>
+      )}
+      {c.data.persona.length > 0 && (
+        <div class="mt-6">
+          <div class="text-xs uppercase tracking-wider text-grey-mid mb-2 font-bold">Voor wie</div>
+          <p class="text-sm text-navy/75 m-0">{c.data.persona.join(', ')}</p>
+        </div>
+      )}
+      <p class="mt-6 mb-0 text-sm"><a href="/#contact" class="text-bf-red font-semibold hover:underline">Zelf zien wat GRiDS met jouw gebouw doet</a></p>
+    </aside>
+  </section>
+</BaseLayout>

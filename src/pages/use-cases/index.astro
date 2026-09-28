@@ -1,0 +1,38 @@
+---
+// Overzicht van de use cases (content collection usecases). Drafts alleen in dev.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const cases = (await getCollection('usecases', ({ data }) => import.meta.env.PROD ? !data.draft : true))
+  .sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout title="Use cases" description="Hoe organisaties GRiDS gebruiken: liftbeheer, hang- en sluitwerk, bestek en ruimtestaten, brandwerende coating, deelmodellen. Per toepassing de stappen en het resultaat.">
+  <section class="bg-navy text-white">
+    <div class="mx-auto max-w-6xl px-6 py-16 sm:py-20">
+      <div class="max-w-3xl">
+        <div class="text-xs uppercase tracking-wider text-bf-red-coral mb-4 font-semibold">praktijk</div>
+        <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-white mb-5 leading-[1.05]">Use cases</h1>
+        <p class="text-lg sm:text-xl text-pale-blue leading-relaxed m-0">
+          Wat organisaties met GRiDS doen, per toepassing: de situatie, de stappen en wat het oplevert.
+        </p>
+      </div>
+    </div>
+    <div class="h-1 bg-bf-red"></div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-6 py-16">
+    <div class="grid md:grid-cols-2 gap-6">
+      {cases.map((c) => (
+        <a href={`/use-cases/${c.slug}`} class="group block no-underline border-2 border-grey-light/50 rounded-lg overflow-hidden hover:border-bf-red transition-colors">
+          {c.data.image && <img src={c.data.image} alt="" loading="lazy" class="w-full h-44 object-cover object-top border-b border-grey-light/40" />}
+          <div class="p-6">
+            <div class="text-xs uppercase tracking-wider text-bf-red mb-2 font-bold">{c.data.klant}{c.data.sector && <span class="text-grey-mid font-normal normal-case tracking-normal"> · {c.data.sector}</span>}</div>
+            <h2 class="text-xl font-bold text-navy m-0 mb-2 group-hover:text-bf-red transition-colors">{c.data.title}</h2>
+            <p class="text-navy/75 text-[15px] leading-relaxed m-0">{c.data.description}</p>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+</BaseLayout>
