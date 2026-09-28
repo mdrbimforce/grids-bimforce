@@ -1,0 +1,90 @@
+---
+import '../styles/globals.css';
+
+export interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+  noIndex?: boolean;
+}
+
+const {
+  title,
+  description = 'GRiDS — alle informatie over je gebouw op één plek, gekoppeld aan het model. Een laag over de systemen die je al gebruikt.',
+  ogImage = '/og-default.png',
+  noIndex = false,
+} = Astro.props;
+
+const fullTitle = title === 'GRiDS' ? 'GRiDS — bimforce' : `${title} — GRiDS`;
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+
+const nav = [
+  { href: '#wat', label: 'Wat het doet' },
+  { href: '#praktijk', label: 'Praktijk' },
+  { href: '#varianten', label: 'Varianten' },
+  { href: '#contact', label: 'Contact' },
+];
+---
+
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noIndex && <meta name="robots" content="noindex,nofollow" />}
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(ogImage, Astro.site).toString()} />
+    <meta property="og:locale" content="nl_NL" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body class="bg-white text-navy">
+    <header class="bg-white border-b border-grey-light/40 sticky top-0 z-20">
+      <div class="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between gap-6">
+        <a href="/" class="flex items-center gap-3 no-underline">
+          <img src="/logos/bimforce-logo.png" alt="bimforce" class="h-9 w-auto" />
+          <span class="hidden sm:inline text-navy font-bold text-lg border-l border-grey-light/60 pl-3">GRiDS</span>
+        </a>
+        <nav class="flex-1 flex items-center justify-between">
+          <ul class="hidden md:flex gap-6 lg:gap-8 text-sm font-medium uppercase tracking-wide">
+            {nav.map((n) => (
+              <li><a href={n.href} class="hover:text-bf-red no-underline transition-colors">{n.label}</a></li>
+            ))}
+          </ul>
+          <ul class="flex ml-auto text-sm font-medium uppercase tracking-wide">
+            <li><a href="https://knowledge.bimforce.com" class="hover:text-bf-red no-underline transition-colors">knowledge.bimforce.com</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="h-1 bg-bf-red"></div>
+    </header>
+
+    <slot />
+
+    <footer class="mt-24 bg-navy text-white">
+      <div class="mx-auto max-w-6xl px-6 py-10 flex flex-col sm:flex-row justify-between gap-6 items-start sm:items-center">
+        <div class="flex items-center gap-4">
+          <img src="/logos/bimforce-dot-red.png" alt="" class="h-10 w-auto" />
+          <div class="text-sm leading-snug">
+            <div class="font-bold text-white">GRiDS is een product van bimforce</div>
+            <div class="opacity-70">Boxtel · sinds 2016</div>
+          </div>
+        </div>
+        <div class="text-sm">
+          <a href="mailto:leja@bimforce.com" class="text-white hover:text-bf-red-coral underline underline-offset-2">leja@bimforce.com</a>
+          <span class="opacity-60 mx-2">·</span>
+          <a href="https://knowledge.bimforce.com/privacy" class="text-white hover:text-bf-red-coral underline underline-offset-2">Privacy</a>
+          <span class="opacity-60 mx-2">·</span>
+          <a href="https://www.bimforce.com" class="text-white hover:text-bf-red-coral underline underline-offset-2">bimforce.com</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

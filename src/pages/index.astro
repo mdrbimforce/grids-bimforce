@@ -1,0 +1,312 @@
+---
+// Homepage grids.bimforce.com — voorlopige versie (2026-09-28). Tekst volgt het voorstel in
+// leja-brain documents/quest-139/voorstel-grids-pagina-bimforce-com-2026-09-28.md (blokken 0-7 + FAQ).
+// Beelden: waar een figuur bestaat staat hij erbij; anders een eerlijk "beeld volgt".
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const situaties = [
+  {
+    kop: 'De informatie is er wel, maar niemand weet waar.',
+    tekst:
+      'Tekeningen in het archief, keuringen in een spreadsheet, het model bij de aannemer, het onderhoudscontract in het ERP. Eén vraag van een inspecteur kost een dag zoeken.',
+  },
+  {
+    kop: 'Het model klopt, de lijst ernaast klopt niet meer.',
+    tekst:
+      'Een nieuwe revisie van het ontwerp, en de uittrekstaat, het bestek of de ruimtestaat van vorige week loopt achter. Wie bijwerkt, doet dat met de hand.',
+  },
+  {
+    kop: 'Iedere partij wil een ander stukje.',
+    tekst:
+      'De installateur wil alleen de installaties, de leverancier alleen zijn eigen producten, de beheerder alleen wat hij moet keuren. Het hele model rondsturen is het gevolg, en niemand vindt daarin wat hij zoekt.',
+  },
+];
+
+const functies = [
+  {
+    nr: '1',
+    kop: 'Modellen inlezen en versies vergelijken',
+    tekst:
+      'Upload een IFC-model, of laat GRiDS het ophalen uit je CDE. Elke nieuwe revisie wordt vergeleken met de vorige: wat is toegevoegd, gewijzigd, verdwenen. De verschillen staan in een lijst en zijn aan te klikken in de 3D-viewer.',
+    beeld: { src: '/figures/drift-analyse.png', alt: 'Verschillenanalyse tussen twee modelrevisies in GRiDS' },
+  },
+  {
+    nr: '2',
+    kop: 'Koppelen aan de bronnen die je al hebt',
+    tekst:
+      'Excel en CSV, je ERP, een keuringsregister, productdata van een leverancier: GRiDS koppelt ze aan de elementen in het model. Handmatig als het één keer moet, automatisch als het elke week terugkomt. Ook via API en webservices.',
+    beeld: { src: '/figures/grids-werkruimte.png', alt: 'De werkruimte van GRiDS met model en gekoppelde gegevens' },
+  },
+  {
+    nr: '3',
+    kop: 'Eisen en eigenschappen één keer vastleggen, in elk project hergebruiken',
+    tekst:
+      'In een bibliotheek leg je vast wat je van een onderdeel wilt weten: welke eigenschappen, welke eisen, welke classificatie (bijvoorbeeld NL/SfB). Je koppelt er een moederbestek aan, een ruimteboom, een objecttypebibliotheek of een importsjabloon voor Excel, JSON of XML. Die bibliotheek gebruik je in elk volgend project.',
+    beeld: { src: '/figures/grids-bibliotheek.png', alt: 'Bibliotheek met templates in GRiDS' },
+  },
+  {
+    nr: '4',
+    kop: 'Automatisch classificeren en verrijken',
+    tekst:
+      'Op basis van regels herkent GRiDS welke elementen bij welke eis, welk product of welke categorie horen, en vult ontbrekende informatie aan. Dat werkt ook als het model onvolledig is: een bestek of productlijst kan de gaten vullen.',
+    beeld: null,
+  },
+  {
+    nr: '5',
+    kop: 'Controleren of alles klopt',
+    tekst:
+      'Per onderdeel ziet GRiDS of aan de eisen is voldaan: keuringen op tijd, verplichte gegevens aanwezig, producten volgens specificatie. Een dashboard laat de stand zien per gebouw, per locatie of per contract. Bij ZGEM draait dit voor liftinstallaties op 13 locaties: ruim 4.000 assets en bijna 300 controleregels, automatisch bijgehouden.',
+    beeld: { src: '/figures/compliance-graph.png', alt: 'Compliance-overzicht per asset in GRiDS' },
+  },
+  {
+    nr: '6',
+    kop: 'Rapporten en documenten genereren',
+    tekst:
+      'Uittrekstaten, ruimtestaten, een technische omschrijving, een onderhoudsrapport: GRiDS maakt ze uit het model en de gekoppelde data, als PDF of als data. Nieuwe revisie van het model, nieuwe versie van het document.',
+    beeld: { src: '/figures/rapportage-periodieke-keuring.png', alt: 'Gegenereerde rapportage van een periodieke keuring' },
+  },
+  {
+    nr: '7',
+    kop: 'Precies het juiste deel teruggeven',
+    tekst:
+      'Elke partij krijgt een verrijkt IFC-model met alleen de onderdelen en gegevens die voor haar bedoeld zijn. Een partij kan haar deel verrijken en terugsturen; GRiDS voegt de wijzigingen samen met het geheel. Het volledige model rondsturen is daarmee verleden tijd.',
+    beeld: { src: '/figures/grids-viewer.png', alt: 'De 3D-viewer van GRiDS met een deelmodel' },
+  },
+];
+
+const praktijk = [
+  {
+    klant: 'BUVA',
+    kop: 'Hang- en sluitwerk uit het model',
+    tekst:
+      'Uit een IFC- of Revit-model maakt GRiDS automatisch de hang- en sluitwerkstaat. De projectadviseur vult het slotadvies in, GRiDS koppelt dat terug aan het model en levert een nieuw IFC-model met de juiste beslaginformatie per deur.',
+    link: { href: 'https://www.bimforce.com/grids', label: 'Over de samenwerking met BUVA en BAM' },
+  },
+  {
+    klant: 'ZGEM',
+    kop: 'Liftbeheer op 13 locaties',
+    tekst:
+      'Het meerjarenonderhoudsplan en de keuringsdata zijn gekoppeld aan de gebouwmodellen van 13 locaties. Per lift is zichtbaar welke keuring wanneer moet, en of dat gebeurd is. Eén compliance-template, duizenden automatische controles.',
+  },
+  {
+    klant: 'Janssen de Jong / Hercuton',
+    kop: 'Bestek en ruimtestaten uit het ontwerpmodel',
+    tekst:
+      'Uit het ontwerpmodel genereert GRiDS de technische omschrijving, de ruimtestaten en de materiaalrapportage. Een wijziging in het model is een wijziging in het document, zonder tussenstap.',
+  },
+];
+
+const varianten = [
+  { naam: 'Basis', voor: 'Kleine teams, projecten tot 10.000 m²', punten: ['Onbeperkt aantal gebruikers en projecten', 'Basistemplates, eigen templates maken', 'Versionering en verschillenanalyse', 'Rapportages genereren en exporteren'] },
+  { naam: 'Premium', voor: 'Grote teams, bedrijfsbrede inzet', punten: ['Alles uit Basis', 'Eigen datakoppelingen en rapportages', 'Integratie met je eigen CDE', 'API-toegang tot de gebouwdata', 'Eigen url en vertaling van de interface'] },
+  { naam: 'Enterprise', voor: 'Volledige vrijheid, eigen hosting', punten: ['Alles uit Premium', 'Hosting op je eigen servers', 'Eigenaar van de graph database, admin-toegang', 'Volledig open source implementatie', 'SLA en escrow'] },
+];
+
+const faq = [
+  { v: 'Moet mijn model perfect zijn?', a: 'Nee. GRiDS classificeert ook een onvolledig model, met een bestek of productlijst als aanvulling. Wat ontbreekt wordt zichtbaar, en dat is vaak de eerste winst.' },
+  { v: 'Werkt het met Revit?', a: 'Ja, via IFC. Voor Revit-specifieke werkstromen (bibliotheekbeheer, NLRS) hebben we aparte hulpmiddelen.' },
+  { v: 'Hoeveel werk is de inrichting?', a: 'Een eerste koppeling van model en lijst staat in dagen. De bibliotheek met eisen en eigenschappen groeit per project; die investering betaalt zich bij het tweede project terug.' },
+  { v: 'Wat kost het?', a: 'Drie varianten, van een gedeelde omgeving tot volledig eigen hosting. We sturen de actuele prijslijst op na een eerste gesprek.' },
+  { v: 'Wie ziet mijn data?', a: 'Alleen wie jij toegang geeft. Per proces en per persoon leg je vast welke informatie beschikbaar is.' },
+];
+---
+
+<BaseLayout title="GRiDS">
+  <!-- Blok 0 · Hero -->
+  <section class="bg-navy text-white">
+    <div class="mx-auto max-w-6xl px-6 py-20 sm:py-28">
+      <div class="max-w-4xl">
+        <div class="text-xs uppercase tracking-wider text-bf-red-coral mb-4 font-semibold">GRiDS · digitaal gebouwdossier</div>
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-6 text-white leading-[1.05]">
+          Alle informatie over je gebouw op één plek, gekoppeld aan het model.
+        </h1>
+        <p class="text-lg sm:text-xl text-white/85 max-w-3xl leading-relaxed mb-8">
+          GRiDS legt een laag over de systemen die je al gebruikt. Modellen, lijsten, keuringen en documenten
+          komen samen, blijven up-to-date en gaan precies zo terug naar wie ze nodig heeft.
+        </p>
+        <div class="flex flex-wrap gap-3">
+          <a href="#wat" class="no-underline bg-bf-red text-white font-semibold px-5 py-3 rounded hover:bg-bf-red-bright transition-colors">Bekijk hoe het werkt</a>
+          <a href="#contact" class="no-underline border border-white/50 text-white font-semibold px-5 py-3 rounded hover:border-white transition-colors">Plan een kennismaking</a>
+        </div>
+      </div>
+    </div>
+    <div class="h-1 bg-bf-red"></div>
+  </section>
+
+  <!-- Blok 1 · Herken je dit? -->
+  <section class="mx-auto max-w-6xl px-6 py-16">
+    <div class="text-xs uppercase tracking-wider text-bf-red mb-2 font-bold">Herken je dit?</div>
+    <h2 class="text-3xl font-bold text-navy mb-8">Drie situaties die we vaak tegenkomen</h2>
+    <div class="grid md:grid-cols-3 gap-6">
+      {situaties.map((s) => (
+        <div class="border-2 border-grey-light/50 rounded-lg p-6">
+          <h3 class="text-lg font-bold text-navy mb-2">{s.kop}</h3>
+          <p class="text-navy/75 text-[15px] leading-relaxed m-0">{s.tekst}</p>
+        </div>
+      ))}
+    </div>
+    <p class="mt-8 text-lg text-navy font-semibold">GRiDS is gebouwd om deze drie problemen in één keer op te lossen.</p>
+  </section>
+
+  <!-- Blok 2 · Wat GRiDS doet -->
+  <section id="wat" class="bg-cream/40 border-y border-grey-light/30 scroll-mt-20">
+    <div class="mx-auto max-w-6xl px-6 py-16 grid md:grid-cols-[1fr_2fr] gap-10 items-start">
+      <div>
+        <div class="text-xs uppercase tracking-wider text-bf-red mb-2 font-bold">In gewone taal</div>
+        <h2 class="text-3xl font-bold text-navy m-0">Verzamelen, koppelen, controleren, teruggeven</h2>
+      </div>
+      <div class="text-navy/85 space-y-4 text-[16px] leading-relaxed">
+        <p class="m-0">
+          GRiDS is een digitaal gebouwdossier dat het 3D-model als kapstok gebruikt. Je zet er de bronnen bij die je
+          al hebt: modellen, spreadsheets, keuringsrapporten, productdata, documenten. GRiDS koppelt die aan de
+          onderdelen van het gebouw, controleert of alles klopt met de eisen die je hebt vastgelegd, en levert per
+          partij precies de informatie terug die nodig is. Wijzigt het model, dan worden de koppelingen opnieuw
+          beoordeeld en de rapporten opnieuw gemaakt.
+        </p>
+        <p class="m-0">
+          Onder de motorkap zit een graph database. Dat is een databasetype dat goed overweg kan met de vele
+          relaties in een gebouw: ruimte, element, product, eis, keuring, kosten. Je merkt er als gebruiker weinig
+          van, behalve dat vragen die in een spreadsheet vier tabbladen kosten hier één klik zijn.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Blok 3 · Functionaliteiten -->
+  <section class="mx-auto max-w-6xl px-6 py-16">
+    <div class="text-xs uppercase tracking-wider text-bf-red mb-2 font-bold">Wat je ermee kunt</div>
+    <h2 class="text-3xl font-bold text-navy mb-10">Zeven dingen die GRiDS voor je doet</h2>
+    <div class="space-y-14">
+      {functies.map((f, i) => (
+        <div class={`grid md:grid-cols-2 gap-8 items-center ${i % 2 === 1 ? 'md:[&>*:first-child]:order-2' : ''}`}>
+          <div>
+            <div class="text-bf-red font-bold text-sm mb-2">{f.nr} / 7</div>
+            <h3 class="text-2xl font-bold text-navy mb-3">{f.kop}</h3>
+            <p class="text-navy/80 text-[16px] leading-relaxed m-0">{f.tekst}</p>
+          </div>
+          {f.beeld ? (
+            <img src={f.beeld.src} alt={f.beeld.alt} loading="lazy" class="w-full h-auto rounded-md border border-grey-light/40 shadow-sm" />
+          ) : (
+            <div class="w-full aspect-video rounded-md border-2 border-dashed border-grey-light/70 flex items-center justify-center text-grey-mid text-sm">
+              Schermopname volgt
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- Blok 4 · Praktijk -->
+  <section id="praktijk" class="bg-navy text-white scroll-mt-20">
+    <div class="mx-auto max-w-6xl px-6 py-16">
+      <div class="text-xs uppercase tracking-wider text-bf-red-coral mb-2 font-bold">Zo werkt het in de praktijk</div>
+      <h2 class="text-3xl font-bold text-white mb-10">Drie voorbeelden</h2>
+      <div class="grid md:grid-cols-3 gap-6">
+        {praktijk.map((p) => (
+          <div class="bg-white/5 border border-white/15 rounded-lg p-6">
+            <div class="text-xs uppercase tracking-wider text-pale-blue mb-2 font-semibold">{p.klant}</div>
+            <h3 class="text-xl font-bold text-white mb-3">{p.kop}</h3>
+            <p class="text-white/80 text-[15px] leading-relaxed m-0">{p.tekst}</p>
+            {p.link && (
+              <p class="mt-4 mb-0 text-sm"><a href={p.link.href} class="text-bf-red-coral hover:text-white underline underline-offset-2">{p.link.label}</a></p>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Blok 5 · Past in wat je al hebt -->
+  <section class="mx-auto max-w-6xl px-6 py-16 grid md:grid-cols-[1fr_2fr] gap-10 items-start">
+    <div>
+      <div class="text-xs uppercase tracking-wider text-bf-red mb-2 font-bold">Past in wat je al hebt</div>
+      <h2 class="text-3xl font-bold text-navy m-0">Een laag over je bestaande systemen</h2>
+    </div>
+    <div class="text-navy/85 text-[16px] leading-relaxed">
+      <p class="mt-0">
+        GRiDS vervangt je CDE, je ERP of je modelleersoftware niet. Het koppelt eraan. Modellen komen uit Catenda Hub,
+        Trimble Connect, Dalux of Autodesk Construction Cloud en gaan daar verrijkt naar terug, volgens de
+        goedkeuringsflow die je daar al hebt. Data komt uit Excel, CSV, een API of een webservice. Je bepaalt in
+        GRiDS de regels: welke informatie hoort waar, voor welk proces is ze bedoeld, en wie mag erbij.
+      </p>
+      <ul class="flex flex-wrap gap-2 list-none p-0 m-0">
+        {['Catenda Hub', 'Trimble Connect', 'Dalux', 'Autodesk Construction Cloud', 'Excel / CSV', 'API en webservices', 'IFC'].map((k) => (
+          <li class="text-sm border border-grey-light/60 rounded px-3 py-1 text-navy/80">{k}</li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- Blok 6 · Van wie de data is -->
+  <section class="bg-cream/40 border-y border-grey-light/30">
+    <div class="mx-auto max-w-6xl px-6 py-16 grid md:grid-cols-[1fr_2fr] gap-10 items-start">
+      <div>
+        <div class="text-xs uppercase tracking-wider text-bf-red mb-2 font-bold">Eigenaarschap</div>
+        <h2 class="text-3xl font-bold text-navy m-0">Jouw gebouw, jouw data</h2>
+      </div>
+      <p class="text-navy/85 text-[16px] leading-relaxed m-0">
+        De gebouwdata blijft van jou. Je kunt GRiDS op onze servers gebruiken of op je eigen servers laten draaien,
+        met toegang via API en desgewenst rechtstreeks tot de database. De graph database waarop GRiDS draait is
+        open source. Wil je er ooit mee stoppen, dan neem je je data mee in een open formaat.
+      </p>
+    </div>
+  </section>
+
+  <!-- Varianten -->
+  <section id="varianten" class="mx-auto max-w-6xl px-6 py-16 scroll-mt-20">
+    <div class="text-xs uppercase tracking-wider text-bf-red mb-2 font-bold">Varianten</div>
+    <h2 class="text-3xl font-bold text-navy mb-3">Drie manieren om GRiDS te gebruiken</h2>
+    <p class="text-navy/70 mb-10 max-w-3xl">Van een gedeelde omgeving voor één project tot volledig eigen hosting. De actuele prijslijst sturen we na een eerste gesprek.</p>
+    <div class="grid md:grid-cols-3 gap-6">
+      {varianten.map((v) => (
+        <div class="border-2 border-grey-light/50 rounded-lg overflow-hidden">
+          <div class="h-1.5 bg-bf-red"></div>
+          <div class="p-6">
+            <h3 class="text-2xl font-bold text-navy mb-1">{v.naam}</h3>
+            <p class="text-grey-mid text-sm mb-4">{v.voor}</p>
+            <ul class="list-disc list-inside text-[15px] text-navy/80 space-y-1.5 m-0 p-0">
+              {v.punten.map((p) => <li>{p}</li>)}
+            </ul>
+            <p class="mt-5 mb-0 text-sm font-semibold text-navy">Prijs op aanvraag</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- Blok 7 · Aan de slag -->
+  <section id="contact" class="bg-navy text-white scroll-mt-20">
+    <div class="mx-auto max-w-6xl px-6 py-16">
+      <div class="max-w-3xl">
+        <div class="text-xs uppercase tracking-wider text-bf-red-coral mb-2 font-bold">Aan de slag</div>
+        <h2 class="text-3xl font-bold text-white mb-4">Zelf zien wat GRiDS met jouw gebouw doet</h2>
+        <p class="text-white/85 text-[16px] leading-relaxed mb-6">
+          Stuur ons een model en een lijst die er nu naast leeft (een keuringsregister, een uittrekstaat, een
+          productlijst). Wij koppelen ze in GRiDS en laten in een gesprek van een uur zien wat eruit komt. Daarna
+          weet je of het voor jouw situatie werkt.
+        </p>
+        <div class="flex flex-wrap gap-3 items-center">
+          <a href="mailto:leja@bimforce.com?subject=Kennismaking%20GRiDS" class="no-underline bg-bf-red text-white font-semibold px-5 py-3 rounded hover:bg-bf-red-bright transition-colors">Plan een kennismaking</a>
+          <span class="text-white/70 text-sm">of bel <a href="tel:+31624193222" class="text-white underline underline-offset-2">+31 (0)6 24 19 32 22</a></span>
+        </div>
+        <p class="text-white/60 text-sm mt-6 mb-0">Trainingen, inrichting en begeleiding bij de eerste projecten doen we zelf.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="mx-auto max-w-3xl px-6 py-16">
+    <h2 class="text-2xl font-bold text-navy mb-6">Veelgestelde vragen</h2>
+    <div class="divide-y divide-grey-light/40">
+      {faq.map((f) => (
+        <details class="py-4 group">
+          <summary class="cursor-pointer font-semibold text-navy list-none flex justify-between items-center">
+            {f.v}
+            <span class="text-grey-mid group-open:rotate-45 transition-transform text-xl leading-none">+</span>
+          </summary>
+          <p class="text-navy/80 text-[15px] leading-relaxed mt-3 mb-0">{f.a}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+</BaseLayout>
